@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock
 
 import pytest
-
 from app.router.model_router import ModelRouter, TaskType
 from app.service.ai_service import AIService
 

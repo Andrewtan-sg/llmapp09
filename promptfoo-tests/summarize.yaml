@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: 'POST /api/ai/summarize - Text Summarization'
+
+providers:
+  - id: https
+    config:
+      url: 'http://localhost:8080/api/ai/summarize'
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        text: '{{text}}'
+      transformResponse: 'JSON.stringify(json)'
+
+prompts:
+  - '{{text}}'
+
+tests:
+  - vars:
+      text: >-
+        Climate change is raising global temperatures, melting glaciers, raising
+        sea levels and increasing extreme weather. Governments are responding
+        with renewable energy, efficiency and carbon capture investments.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return typeof parsed.summary === 'string' && parsed.summary.length > 10;
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return Array.isArray(parsed.keyPoints) && parsed.keyPoints.length > 0;
+
+  - vars:
+      text: >-
+        Quantum computers use qubits and superposition to solve some problems
+        faster, but face decoherence, error-rate and temperature challenges.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return typeof parsed.summary === 'string' && typeof parsed.wordCount === 'number';
+
+  - vars:
+      text: The new restaurant serves excellent Italian food at reasonable prices.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return typeof parsed.summary === 'string' && parsed.summary.length > 0;

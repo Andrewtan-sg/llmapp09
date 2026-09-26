@@ -3,7 +3,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-
 # Use llmapp09/.env as the single local secret source for both direct Python
 # execution and Docker Compose. Existing process environment variables retain
 # precedence, which keeps CI and Kubernetes configuration unchanged.

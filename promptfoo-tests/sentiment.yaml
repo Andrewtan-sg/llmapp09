@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: 'POST /api/ai/sentiment - Sentiment Analysis'
+
+providers:
+  - id: https
+    config:
+      url: 'http://localhost:8080/api/ai/sentiment'
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        text: '{{text}}'
+      transformResponse: 'JSON.stringify(json)'
+
+prompts:
+  - '{{text}}'
+
+tests:
+  - vars:
+      text: I absolutely love this product and the service was excellent.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return parsed.overallSentiment?.toLowerCase() === 'positive' && parsed.sentimentScore > 0;
+
+  - vars:
+      text: This was a terrible experience and a complete waste of money.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return parsed.overallSentiment?.toLowerCase() === 'negative' && parsed.sentimentScore < 0;
+
+  - vars:
+      text: The meeting is scheduled for 3pm on Tuesday in room B.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return parsed.overallSentiment?.toLowerCase() === 'neutral';
+
+  - vars:
+      text: I am happy.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return typeof parsed.confidence === 'number' && Array.isArray(parsed.emotions);
+
+  - vars:
+      text: The food was delicious, but the service was terrible.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return typeof parsed.sentimentScore === 'number' && Array.isArray(parsed.emotions);

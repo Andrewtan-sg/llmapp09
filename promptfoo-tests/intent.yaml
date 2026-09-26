@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: 'POST /api/ai/intent - Intent Detection'
+
+providers:
+  - id: https
+    config:
+      url: 'http://localhost:8080/api/ai/intent'
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        text: '{{text}}'
+      transformResponse: 'JSON.stringify(json)'
+
+prompts:
+  - '{{text}}'
+
+tests:
+  - vars:
+      text: What restaurants near Times Square serve Italian food?
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return parsed.intentCategory?.toLowerCase() === 'question';
+
+  - vars:
+      text: Turn off the living-room lights.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return parsed.intentCategory?.toLowerCase() === 'command';
+
+  - vars:
+      text: Could you please send me the latest sales report?
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return parsed.intentCategory?.toLowerCase() === 'request';
+
+  - vars:
+      text: Revenue increased by 15 percent compared with last year.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return parsed.intentCategory?.toLowerCase() === 'statement';
+
+  - vars:
+      text: Help me.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return typeof parsed.primaryIntent === 'string' && parsed.primaryIntent.length > 0;

@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: 'POST /api/ai/classify - Text Classification'
+
+providers:
+  - id: https
+    config:
+      url: 'http://localhost:8080/api/ai/classify'
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        text: '{{text}}'
+      transformResponse: 'JSON.stringify(json)'
+
+prompts:
+  - '{{text}}'
+
+tests:
+  - vars:
+      text: Artificial intelligence is transforming healthcare diagnosis.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return Array.isArray(parsed.labels) && parsed.labels.length > 0;
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return typeof parsed.primaryCategory === 'string' && parsed.primaryCategory.length > 0;
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return typeof parsed.confidence === 'number' && parsed.confidence >= 0 && parsed.confidence <= 1;
+
+  - vars:
+      text: The team won the championship after a thrilling overtime victory.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return Array.isArray(parsed.labels) && typeof parsed.primaryCategory === 'string';
+
+  - vars:
+      text: The stock market moved after the central bank changed interest rates.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return Array.isArray(parsed.labels) && typeof parsed.primaryCategory === 'string';
+
+  - vars:
+      text: Hello
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const parsed = JSON.parse(output);
+          return Array.isArray(parsed.labels) && typeof parsed.primaryCategory === 'string';
