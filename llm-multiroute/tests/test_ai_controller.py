@@ -1,12 +1,13 @@
 from unittest.mock import patch
 
 import pytest
+from fastapi.testclient import TestClient
+
 from app.dto.classification_response import ClassificationResponse
 from app.dto.intent_response import IntentResponse
 from app.dto.sentiment_response import SentimentResponse
 from app.dto.summary_response import SummaryResponse
 from app.main import app
-from fastapi.testclient import TestClient
 
 
 @pytest.fixture

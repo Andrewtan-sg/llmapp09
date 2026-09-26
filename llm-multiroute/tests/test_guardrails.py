@@ -1,9 +1,10 @@
 import importlib
 
 import pytest
+from pydantic import BaseModel, Field
+
 from app.guardrails.engine import GuardrailBlockedError, GuardrailsEngine
 from app.monitoring import metrics_store
-from pydantic import BaseModel, Field
 
 # NOTE: `app.monitoring.__init__` rebinds the name `metrics_store` to a
 # singleton *instance*, shadowing the submodule of the same name. Use
