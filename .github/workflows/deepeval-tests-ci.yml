@@ -27,6 +27,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate required GitHub secrets
+        run: >-
+          python3 .github/scripts/check_required_env.py
+          OLLAMA_API_KEY OLLAMA_BASE_URL OPENAI_API_KEY
+
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
